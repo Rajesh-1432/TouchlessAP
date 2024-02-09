@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Checkbox } from "antd";
 import Sidebar from "../components/Sidebar";
 import { CloseOutlined } from "@ant-design/icons";
+import { server } from "../constants";
+import Layout from "../components/Layout";
 
 const Process = () => {
+  console.log(server);
   const [pdfVisible, setPdfVisible] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [poNumber, setPoNumber] = useState("");
@@ -16,22 +19,27 @@ const Process = () => {
     console.log(`checked = ${e.target.checked}`);
   };
 
-  const onDeleteClick =async (record) => {
-   try {
-    const response = await fetch(`http://localhost:3000/api/delete-data/${record.id}`,{
-      method:"DELETE"
-    });
-    if(Response.ok){
-      console.log("Deleted Succesfully");
-      const updatedData = myres.filter(item => item.id !== record.id);
-      setMyres(updatedData);
-    } else {
-      console.error('Error deleting data:', response.statusText);
+  const onDeleteClick = async (record) => {
+    try {
+      console.log("process.env:", process.env);
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/delete-data/${record._id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (response.ok) {
+        console.log("Deleted Successfully");
+        const updatedData = myres.filter((item) => item._id !== record._id);
+        setMyres(updatedData);
+      } else {
+        console.error("Error deleting data:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error deleting data:", error);
     }
-  } catch (error) {
-    console.error('Error deleting data:', error);
-  }
-};
+  };
 
   const handleOnClose = () => {
     setPdfVisible(false);
@@ -54,7 +62,7 @@ const Process = () => {
     const fetchData = async () => {
       try {
         console.log("Fetching data...");
-        const response = await fetch("http://localhost:3000/api/get-data");
+        const response = await fetch(`${server}/api/get-data`);
         console.log("Response status:", response.status);
 
         if (!response.ok) {
@@ -152,9 +160,8 @@ const Process = () => {
   );
 
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
-      {/* Sidebar component */}
-      <Sidebar />
+    <Layout>
+      {/* <div style={{ display: "flex", height: "100vh" }}> */}
       <div style={{ width: "100%", padding: "10px" }}>
         <Table
           columns={columns}
@@ -194,7 +201,8 @@ const Process = () => {
                   value={selectedRow.PO_Number || ""}
                   readOnly
                   style={{ fontSize: "14px", padding: "5px" }}
-                /><br />
+                />
+                <br />
                 <label style={{ fontWeight: "bold", fontSize: "16px" }}>
                   Quantity
                 </label>
@@ -204,7 +212,8 @@ const Process = () => {
                   value={selectedRow.Quantity || ""}
                   readOnly
                   style={{ fontSize: "14px", padding: "5px" }}
-                /><br />
+                />
+                <br />
                 <label style={{ fontWeight: "bold", fontSize: "16px" }}>
                   Amount
                 </label>
@@ -234,7 +243,8 @@ const Process = () => {
           )}
         </Modal>
       </div>
-    </div>
+      {/* </div> */}
+    </Layout>
   );
 };
 

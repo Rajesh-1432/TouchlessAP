@@ -18,36 +18,46 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import Sidebar from "../components/Sidebar";
-import bg from '../assets/bg.jpeg';
+
+import { server } from "../constants";
+import Layout from "../components/Layout";
 const Cards = () => {
   const [processCount, setProcessCount] = useState(0);
   const [errorCount, setErrorCount] = useState(0);
 
   useEffect(() => {
-    const storedData = localStorage.getItem("apidata");
-    try {
-      const myres = JSON.parse(storedData);
-      if (myres && Array.isArray(myres)) {
-        let processCount = 0;
-        let errorCount = 0;
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`${server}/api/get-data`);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch data. Status: ${response.status}`);
+        }
 
-        myres.forEach((item) => {
-          if (item.attachmentsCount > 0) {
-            processCount += 1;
-          } else {
-            errorCount += 1;
-          }
-        });
+        const myres = await response.json();
+        if (myres && Array.isArray(myres.data)) {
+          let processCount = 0;
+          let errorCount = 0;
 
-        setProcessCount(processCount);
-        setErrorCount(errorCount);
-      } else {
-        console.error("myres data not found in local storage");
+          myres.data.forEach((item) => {
+            if (item.attachmentsCount > 0) {
+              processCount += 1;
+            } else {
+              errorCount += 1;
+            }
+          });
+
+          setProcessCount(processCount);
+          setErrorCount(errorCount);
+        } else {
+          console.error("Data not found in the API response");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
-    } catch (error) {
-      console.error("Error parsing local storage data:", error);
-    }
-  }, [localStorage.getItem("apidata")]);
+    };
+
+    fetchData();
+  }, []); // Empty dependency array to run the effect only once on component mount
 
   const getColor = (name) => {
     switch (name) {
@@ -67,13 +77,9 @@ const Cards = () => {
   ];
 
   return (
-    <div style={{ display: "flex",   background: `url(${bg})`, // Apply background image
-    backgroundSize: 'cover', // Adjust as needed
-    backgroundPosition: 'center center', // Adjust as needed
-    position:'sticky', }}>
-      <Sidebar />
-
-      <div style={{ width: "100%", margin: "30px",}}>
+    <Layout>
+      {/* <div style={{ display: "flex",    }}> */}
+      <div style={{ width: "100%" }}>
         {/* Cards Row */}
         <Row gutter={[16, 16]} justify="center">
           <Col>
@@ -119,7 +125,7 @@ const Cards = () => {
             <Card
               style={{
                 width: "350px",
-                backgroundColor:'#D8BFD8',
+                backgroundColor: "#D8BFD8",
                 paddingRight: "300px",
                 marginLeft: "40px",
                 height: "150px",
@@ -137,7 +143,8 @@ const Cards = () => {
 
         <ChartsContainer chartData={chartData} getColor={getColor} />
       </div>
-    </div>
+      {/* </div> */}
+    </Layout>
   );
 };
 
@@ -165,7 +172,11 @@ const ChartsContainer = ({ chartData, getColor }) => (
       </ResponsiveContainer>
     </Card>
     {/* Bar Chart */}
-    <Card title="Bar Chart" bordered={false} style={{ flex: 1 ,marginLeft:'50px' }}>
+    <Card
+      title="Bar Chart"
+      bordered={false}
+      style={{ flex: 1, marginLeft: "50px" }}
+    >
       <ResponsiveContainer width="100%" height={250}>
         <BarChart data={chartData}>
           <XAxis dataKey="name" />
@@ -173,12 +184,10 @@ const ChartsContainer = ({ chartData, getColor }) => (
           <Tooltip />
           <Legend />
           <Bar dataKey="value">
-            
             {chartData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={getColor(entry.name)} />
             ))}
           </Bar>
-          
         </BarChart>
       </ResponsiveContainer>
     </Card>

@@ -2,7 +2,7 @@ module.exports = {
     apps: [
       {
         name: 'TouchlessAP',
-        script: 'demo.js', 
+        script: 'index.js', 
         env: {
           NODE_ENV: 'production',
           MONGODB_URI: 'mongodb://localhost:27017/', 

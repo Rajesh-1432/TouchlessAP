@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Form, Button, Input, Radio, message } from "antd";
 import * as Yup from "yup";
+import { server } from "../constants";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email address").required("Required"),
@@ -17,7 +18,7 @@ function EmailServer() {
       await validationSchema.validate(values, { abortEarly: false });
 
       // Make API call
-      const response = await fetch("http://localhost:3000/api/parse-emails", {
+      const response = await fetch(`${server}/api/parse-emails`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -30,30 +31,6 @@ function EmailServer() {
           tls: values.tls,
         }),
       });
-
-      const data = await response.json();
-      console.log("API Response:", data);
-
-      // Handle the API response as needed
-      if (data.success) {
-        message.success("API request successful");
-
-        // Check if the 'message' key is present in the data
-        if (!data.message) {
-          // Retrieve ExistedData from localStorage
-          const ExistingData =
-            JSON.parse(localStorage.getItem("apidata")) || [];
-          // Combine ExistingData and new Arrival Data
-          const NewData = [...ExistingData, data];
-          // Store combined data in local Storage
-          localStorage.setItem("apidata", JSON.stringify(NewData));
-        } else {
-          // Show an alert if 'message' key is present
-          alert(data.message);
-        }
-      } else {
-        message.error(`API request failed: ${data.error || data.message}`);
-      }
     } catch (errors) {
       errors.inner.forEach((error) => {
         message.error(error.message);
