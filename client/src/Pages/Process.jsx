@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Checkbox } from "antd";
-import Sidebar from "../components/Sidebar";
 import { CloseOutlined } from "@ant-design/icons";
 import { server } from "../constants";
 import Layout from "../components/Layout";

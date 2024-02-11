@@ -17,8 +17,6 @@ import {
   ArrowDownOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import Sidebar from "../components/Sidebar";
-
 import { server } from "../constants";
 import Layout from "../components/Layout";
 const Cards = () => {

@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { Tabs } from "antd";
 import EmailServer from "./EmailServer";
 import ERTServer from "./ERPServer";
-import Sidebar from "../components/Sidebar";
-import bg from "../assets/bg.jpeg";
 import Layout from "../components/Layout";
 const { TabPane } = Tabs;
 

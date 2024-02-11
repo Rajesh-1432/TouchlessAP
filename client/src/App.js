@@ -3,13 +3,11 @@ import LoginPage from "./Pages/LoginPage";
 import Cards from "./Pages/Home";
 import Process from "./Pages/Process";
 import Settings from "./Pages/Settings";
-
 import Protected from "./components/protected";
 import {
   BrowserRouter as Router,
   Route,
   Routes,
-  Navigate,
 } from "react-router-dom";
 function App() {
   return (

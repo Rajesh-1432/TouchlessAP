@@ -31,6 +31,8 @@ function EmailServer() {
           tls: values.tls,
         }),
       });
+        // Reset the form
+        document.getElementById("emailserver").reset();
     } catch (errors) {
       errors.inner.forEach((error) => {
         message.error(error.message);
