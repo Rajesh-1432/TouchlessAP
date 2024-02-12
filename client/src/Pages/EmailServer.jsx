@@ -31,8 +31,15 @@ function EmailServer() {
           tls: values.tls,
         }),
       });
-        // Reset the form
+
+      if (response.ok) {
+        // Reset the form if the API call is successful
         document.getElementById("emailserver").reset();
+        message.success("Emails parsed successfully!");
+      } else {
+        const errorData = await response.json();
+        message.error(errorData.error || "Something went wrong!");
+      }
     } catch (errors) {
       errors.inner.forEach((error) => {
         message.error(error.message);

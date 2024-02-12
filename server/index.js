@@ -9,12 +9,14 @@ const cors = require("cors");
 const MongoClient = require("mongodb").MongoClient;
 const fs = require("fs");
 const { ObjectId } = require("mongodb");
-const { Console } = require("console");
-require("dotenv").config();
+const path = require('path');
 
 const app = express();
 app.use(cors({}));
 const PORT = process.env.PORT || 3000;
+
+const buildpath = path.join(__dirname, '../client/build');
+app.use(express.static(buildpath));
 
 app.use(bodyParser.json());
 
@@ -28,14 +30,14 @@ const parseTextToJSON = (pdfText) => {
     Quantity: lines[9].split(" ")[2].replace("10.00", "").trim(),
     Amount: lines[10].split(" ")[1],
   };
-  // console.log(lines.length);
   return jsonResult;
 };
-// Global error handler middleware
+
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ success: false, error: "Internal Server Error" });
 });
+
 app.post("/api/parse-emails", async (req, res) => {
   const imapConfig = {
     user: req.body.user,
@@ -51,11 +53,10 @@ app.post("/api/parse-emails", async (req, res) => {
       imap.openBox("INBOX", false, () => {
         imap.search(["UNSEEN", ["SINCE", new Date()]], (err, results) => {
           if (err) {
-            return next(err); // Pass the error to the global error handler
+            return next(err);
           }
 
           if (results.length === 0) {
-            // No messages to fetch
             res.json({ success: true, message: "No new messages to fetch" });
             imap.end();
             return;
@@ -71,18 +72,15 @@ app.post("/api/parse-emails", async (req, res) => {
               simpleParser(stream, async (err, parsed) => {
                 const { attachments, from } = parsed;
 
-                //extracting sender email address
                 senderEmail = from.value[0].address;
-                // Check if attachments array is defined and not empty
+
                 if (Array.isArray(attachments) && attachments.length > 0) {
                   console.log(`Number of attachments: ${attachments.length}`);
                   attachmentsCount += attachments.length;
 
-                  // Iterate through all attachments
                   for (let i = 0; i < attachments.length; i++) {
                     const currentAttachment = attachments[i];
 
-                    // Check if the current attachment is a PDF
                     if (currentAttachment.contentType === "application/pdf") {
                       const pdfBuffer = currentAttachment.content;
                       try {
@@ -90,14 +88,18 @@ app.post("/api/parse-emails", async (req, res) => {
                         const pdfText = data.text;
 
                         const jsonFromText = parseTextToJSON(pdfText);
-                        //converting pdfBuffer to original pdf
-                        console.log(jsonFromText);
+
                         content = fs.writeFile(
                           "attachment.pdf",
                           pdfBuffer,
                           (err) => {
                             if (err) {
                               console.error("Error writing PDF file:", err);
+                              res.status(500).json({
+                                success: false,
+                                error: "Error writing PDF file",
+                              });
+                              return;
                             } else {
                               console.log(
                                 "PDF file has been successfully created."
@@ -105,8 +107,8 @@ app.post("/api/parse-emails", async (req, res) => {
                             }
                           }
                         );
+
                         const json = pdfBuffer.toJSON();
-                        // Store the data of each attachment in the array
                         attachmentsData.push({
                           ...jsonFromText,
                           pdfBuffer: pdfBuffer.toString("base64"),
@@ -115,7 +117,6 @@ app.post("/api/parse-emails", async (req, res) => {
                         });
 
                         if (i === attachments.length - 1) {
-                          // Inserting jsonobject into DB
                           const dbo = await connect();
                           await dbo
                             .collection("orderdetails")
@@ -123,15 +124,15 @@ app.post("/api/parse-emails", async (req, res) => {
                           close();
                         }
                       } catch (jsonError) {
-                        res
-                          .status(500)
-                          .json({ success: false, error: jsonError.message });
+                        res.status(500).json({
+                          success: false,
+                          error: jsonError.message,
+                        });
                       }
                     } else {
-                      // If the attachment is not a PDF
-                      res.json({
+                      res.status(400).json({
                         success: false,
-                        message: "Attachment is not a PDF",
+                        error: "Attachment is not a PDF",
                       });
                     }
                   }
@@ -185,17 +186,16 @@ app.post("/api/parse-emails", async (req, res) => {
 
     imap.connect();
   } catch (ex) {
-    next(ex); // Pass the error to the global error handler
+    res.status(500).json({ success: false, error: ex.message });
   }
 });
+
 app.get("/api/get-data", async (req, res) => {
   try {
     const dbo = await connect();
     const orders = await dbo.collection("orderdetails").find({}).toArray();
-    // console.log(orders);
     close();
 
-    // Send JSON response
     res.status(200).json({
       success: true,
       data: orders,
@@ -205,15 +205,15 @@ app.get("/api/get-data", async (req, res) => {
     res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 });
+
 app.delete("/api/delete-data/:orderId", async (req, res) => {
   try {
     const orderId = req.params.orderId;
     console.log("Deleting order with ID:", orderId);
     if (!ObjectId.isValid(orderId)) {
-      console.log(orderId);
       return res
         .status(400)
-        .json({ success: false, error: "invalid Order Id" });
+        .json({ success: false, error: "Invalid Order Id" });
     }
     const dbo = await connect();
     const query = { _id: new ObjectId(orderId) };
@@ -222,15 +222,19 @@ app.delete("/api/delete-data/:orderId", async (req, res) => {
       console.log("Order deleted successfully");
       res
         .status(200)
-        .json({ success: true, message: "orderd deleted succesfully" });
+        .json({ success: true, message: "Order deleted successfully" });
     } else {
-      res.status(400).json({ success: false, error: "order NOT found" });
+      res.status(400).json({ success: false, error: "Order not found" });
     }
     close();
   } catch (error) {
     console.error("Error deleting order:", error);
-    res.status(500).json({ success: false, error: "internal server Error" });
+    res.status(500).json({ success: false, error: "Internal Server Error" });
   }
+});
+
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
 });
 
 app.listen(PORT, () => {
