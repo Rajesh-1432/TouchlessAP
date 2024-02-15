@@ -1,24 +1,26 @@
-const { MongoClient } = require("mongodb");
 
-const url = "mongodb+srv://rajeshdumpala1432:Tail@1234@cluster0.wyobtyc.mongodb.net/";
-const dbName = "tlsAp";
+const mongoose = require('mongoose');
 
-let client;
+const url =
+  'mongodb+srv://rajeshdumpala1432:Tail%401234@cluster0.wyobtyc.mongodb.net/tlsAp';
+
+let connection;
+
 const connect = async () => {
   try {
-    const client = await MongoClient.connect(url, { useUnifiedTopology: true });
-    console.log("Database Connected Successfully");
-    return client.db(dbName);
+    connection = await mongoose.connect(url);
+    console.log('Database Connected Successfully');
+    return connection.connection.db;
   } catch (error) {
-    console.error("Failed To Connect Database:", error);
+    console.error('Failed To Connect Database:', error);
     throw error;
   }
 };
 
 const close = () => {
-  if (client) {
-    client.close();
-    console.log("Database Connection Ended");
+  if (connection) {
+    connection.disconnect();
+    console.log('Database Connection Ended');
   }
 };
 

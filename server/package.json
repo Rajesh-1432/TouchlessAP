@@ -17,6 +17,7 @@
     "imap": "^0.8.19",
     "mailparser": "^3.6.5",
     "mongodb": "^6.3.0",
+    "mongoose": "^8.1.2",
     "pdf-parse": "^1.1.1"
   },
   "devDependencies": {
