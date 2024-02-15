@@ -1,6 +1,6 @@
 const { MongoClient } = require("mongodb");
 
-const url = "mongodb://localhost:27017/";
+const url = "mongodb+srv://rajeshdumpala1432:Tail@1234@cluster0.wyobtyc.mongodb.net/";
 const dbName = "tlsAp";
 
 let client;
