@@ -120,7 +120,7 @@ app.post("/api/parse-emails", async (req, res) => {
                           const dbo = await connect();
                           await dbo
                             .collection("orderdetails")
-                            .insertMany(attachmentsData);
+                            .insertOne(attachmentsData);
                           close();
                         }
                       } catch (jsonError) {
