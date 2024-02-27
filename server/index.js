@@ -9,13 +9,13 @@ const cors = require("cors");
 const MongoClient = require("mongodb").MongoClient;
 const fs = require("fs");
 const { ObjectId } = require("mongodb");
-const path = require('path');
+const path = require("path");
 
 const app = express();
 app.use(cors({}));
 const PORT = process.env.PORT || 3000;
 
-const buildpath = path.join(__dirname, '../client/build');
+const buildpath = path.join(__dirname, "../client/build");
 app.use(express.static(buildpath));
 
 app.use(bodyParser.json());
@@ -64,10 +64,11 @@ app.post("/api/parse-emails", async (req, res) => {
 
           const f = imap.fetch(results, { bodies: "" });
           let attachmentsCount = 0;
-          let attachmentsData = [];
+          
 
           f.on("message", (msg) => {
             let senderEmail;
+            let attachmentsData = [];
             msg.on("body", (stream) => {
               simpleParser(stream, async (err, parsed) => {
                 const { attachments, from } = parsed;
@@ -120,7 +121,7 @@ app.post("/api/parse-emails", async (req, res) => {
                           const dbo = await connect();
                           await dbo
                             .collection("orderdetails")
-                            .insertOne(attachmentsData);
+                            .insertMany(attachmentsData);
                           close();
                         }
                       } catch (jsonError) {
@@ -140,7 +141,8 @@ app.post("/api/parse-emails", async (req, res) => {
                   attachmentsCount = 0;
                   console.log(senderEmail);
                   const dbo = await connect();
-                  await dbo.collection("orderdetails").insertOne({
+                  const OrderDetails = dbo.model("orderdetails");
+                  await OrderDetails.create({
                     companyName: "",
                     po_number: "",
                     quantity: "",
@@ -149,6 +151,7 @@ app.post("/api/parse-emails", async (req, res) => {
                     senderEmail,
                     attachmentsCount,
                   });
+
                   close();
                 }
               });
@@ -233,8 +236,8 @@ app.delete("/api/delete-data/:orderId", async (req, res) => {
   }
 });
 
-app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
 });
 
 app.listen(PORT, () => {
