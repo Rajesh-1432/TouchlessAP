@@ -10,6 +10,7 @@ const MongoClient = require("mongodb").MongoClient;
 const fs = require("fs");
 const { ObjectId } = require("mongodb");
 const path = require("path");
+const bcrypt = require('bcrypt');
 
 const app = express();
 app.use(cors({}));
@@ -236,9 +237,56 @@ app.delete("/api/delete-data/:orderId", async (req, res) => {
   }
 });
 
-app.get("/*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
-});
+// const isAuthenticated=async(req,res,next)=>{
+//   const{user}= req.body
+
+//   if(!user) return res.json({msg:"User not founf"})
+
+//   const dbo = await connect();
+//   const usersCollection = dbo.collection('users');
+//   const data = usersCollection.find({username:user?.username});
+
+//   if(!data) return res.json({msg:"Unautherized"})
+
+//   next()
+// }
+
+// app.post('/login', async (req, res) => {
+//   try {
+//     console.log("request BODY::", req.body);
+//     const { Username, Password } = req.body;
+
+//     const dbo = await connect();
+//     const usersCollection = dbo.collection('users');
+//     const allUsers = await usersCollection.find({}).toArray();
+//     console.log('All Users:', allUsers);
+
+//     const user = await usersCollection.findOne({ Username });
+
+//     console.log(user);
+
+//     if (!user) {
+//       return res.status(401).json({ message: 'Invalid user' });
+//     }
+
+//     const passwordMatch = await bcrypt.compare(Password, user.Password); 
+
+//     if (!passwordMatch) {
+//       return res.status(401).json({ message: 'Invalid password' });
+//     }
+
+//     res.json({ message: 'Authentication successful', user });
+
+//   } catch (error) {
+//     console.error('Login error:', error);
+//     res.status(500).json({ message: 'Internal server error' });
+//   } finally {
+//     close(); // Close the database connection after using it
+//   }
+// });
+// app.get("/*",isAuthenticated, (req, res) => {
+//   res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+// });
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
