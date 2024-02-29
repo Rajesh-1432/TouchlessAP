@@ -31,7 +31,7 @@ const LoginPage = () => {
   return (
     <Row justify="space-around" align="middle" style={{ height: "100vh" }}>
       <Col span={8} style={{ padding: "50px" }}>
-        <Title level={2}>Login</Title>
+        <Title level={2}>Login page</Title>
         <Form
           form={form}
           onFinish={handleSubmit}
