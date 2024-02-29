@@ -10,7 +10,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const handleSubmit = (values) => {
-    // Custom validation for a specific username and password
+    // Custom validation for a specific username and passwords
     const expectedUsername = "tail@gmail.com";
     const expectedPassword = "1234567890";
 
@@ -31,7 +31,7 @@ const LoginPage = () => {
   return (
     <Row justify="space-around" align="middle" style={{ height: "100vh" }}>
       <Col span={8} style={{ padding: "50px" }}>
-        <Title level={2}>Login</Title>
+        <Title level={2}>Login Page</Title>
         <Form
           form={form}
           onFinish={handleSubmit}
