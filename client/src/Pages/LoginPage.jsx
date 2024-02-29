@@ -10,7 +10,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const handleSubmit = (values) => {
-    // Custom validation for a specific username and passwor
+    // Custom validation for a specific username and password
     const expectedUsername = "tail@gmail.com";
     const expectedPassword = "1234567890";
 
