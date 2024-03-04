@@ -14,7 +14,7 @@ const bcrypt = require('bcrypt');
 
 const app = express();
 app.use(cors({}));
-const PORT = process.env.PORT || 80;
+const PORT = process.env.PORT || 3000;
 
 const buildpath = path.join(__dirname, "../client/build");
 app.use(express.static(buildpath));
@@ -288,6 +288,6 @@ app.delete("/api/delete-data/:orderId", async (req, res) => {
 //   res.sendFile(path.join(__dirname, "../client/build", "index.html"));
 // });
 
-app.listen(PORT,'54.206.54.179', () => {
+app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
