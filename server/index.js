@@ -14,7 +14,7 @@ const bcrypt = require('bcrypt');
 
 const app = express();
 app.use(cors({}));
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 const buildpath = path.join(__dirname, "../client/build");
 app.use(express.static(buildpath));
