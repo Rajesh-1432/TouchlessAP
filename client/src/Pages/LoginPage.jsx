@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Row, Col, Typography } from "antd";
 import { useNavigate } from "react-router-dom";
+import Tail from "../assets/tai.png";
+import bg from "../assets/bg.jpeg";
 
 const { Title } = Typography;
 
@@ -29,7 +31,8 @@ const LoginPage = () => {
   };
 
   return (
-    <Row justify="space-around" align="middle" style={{ height: "100vh" }}>
+    <div style={{ backgroundImage: `url(${bg})`, backgroundSize: 'cover', height: '100vh' }}>
+          <Row justify="space-around" align="middle" style={{ height: "100vh", }}>
       <Col span={8} style={{ padding: "50px" }}>
         <Title level={2}>Login Page</Title>
         <Form
@@ -83,12 +86,14 @@ const LoginPage = () => {
 
       <Col span={8} style={{ padding: "30px" }}>
         <img
-          src="https://thinkailabs.com/wp-content/uploads/2021/11/logo-1.png"
+          src={Tail}
           alt="AI Labs Logo"
-          style={{ height: "150px", width: "100%", marginTop: "0%" }}
+          style={{ height: "120px", width: "100%", marginTop: "0%" }}
         />
       </Col>
     </Row>
+    </div>
+
   );
 };
 

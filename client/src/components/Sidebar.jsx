@@ -86,7 +86,7 @@ const Sidebar = () => {
               <img
                 src={thinkAI}
                 alt="Logo"
-                style={{ width: "130px", height: "40px", marginTop: "20px" }}
+                style={{ width: "150px", height: "55px", marginTop: "20px" }}
               />
             </div>
           )}
@@ -103,7 +103,7 @@ const Sidebar = () => {
               <img
                 src={thinkAIlogo}
                 alt="Logo"
-                style={{ width: "45px", height: "40px", marginTop: "20px" }}
+                style={{ width: "45px", height: "55px", marginTop: "20px" }}
               />
             </div>
           )}
