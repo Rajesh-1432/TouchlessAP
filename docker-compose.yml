@@ -1,23 +1,55 @@
+# version: '3.8'
+# services:
+#   client:
+#     build:
+#       context: ./client
+#     ports:
+#       - "80:80"
+#     networks:
+#       - touchlessap-network
+
+#   server:
+#     build:
+#       context: ./server
+#     ports:
+#       - "3001:3001"
+#     networks:
+#       - touchlessap-network
+#     depends_on:
+#       - client
+
+# networks:
+#   touchlessap-network:
+#     driver: bridge
+
+
 version: '3.8'
+
 services:
   client:
     build:
       context: ./client
-    ports:
-      - "80:80"
-    networks:
-      - touchlessap-network
+      dockerfile: Dockerfile
+    volumes:
+      - client-build:/app/build
 
   server:
     build:
       context: ./server
-    ports:
-      - "3001:3001"
-    networks:
-      - touchlessap-network
-    depends_on:
-      - client
+      dockerfile: Dockerfile
 
-networks:
-  touchlessap-network:
-    driver: bridge
+  traefik:
+    image: traefik:v2.5
+    command:
+      - "--api.insecure=true" 
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080" 
+    volumes:
+      - client-build:/client-build
+     
+
+volumes:
+  client-build:

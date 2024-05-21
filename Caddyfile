@@ -1,0 +1,7 @@
+:80 {
+    root * /home/ubuntu/my-app/frontend/build
+    file_server
+
+    # Proxy API requests to the Node.js backend
+    reverse_proxy /api/* http://3.90.220.190:3001
+}
